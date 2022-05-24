@@ -47,6 +47,10 @@ app.post(`${api}/products`, (req, res) => {
   res.send(newProduct);
 });
 
+app.get("/api/getData", (req, res) => {
+  return res.render("Hello World");
+});
+
 app.listen(3000, () => {
   console.log("Server is listening at port 3000");
 });
