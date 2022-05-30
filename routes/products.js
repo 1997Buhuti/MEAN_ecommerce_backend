@@ -51,5 +51,4 @@ router.post(`/`, async (req, res) => {
   }
   return res.send(newProduct);
 });
-//Routes for handling all the product related business logic 
 module.exports = router;
