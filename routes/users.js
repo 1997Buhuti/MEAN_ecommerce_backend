@@ -11,4 +11,5 @@ router.get(`/`, async (req, res) => {
   res.send(userList);
 });
 
+// Routes for getting user List.
 module.exports = router;
