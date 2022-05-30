@@ -44,7 +44,7 @@ router.post(`/`, async (req, res) => {
     numReviews: req.body.numReviews,
     isFeatured: req.body.isFeatured,
   });
-
+  // Some comments added 
   newProduct = await product.save();
   if (!product) {
     return res.send(500).send("Product cannot be created");
