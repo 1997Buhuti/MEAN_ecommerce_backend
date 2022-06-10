@@ -1,7 +1,8 @@
 const { User } = require("../models/user");
+const mongoose = require("mongoose");
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcryptjs");
+const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
 router.get(`/`, async (req, res) => {
@@ -13,7 +14,7 @@ router.get(`/`, async (req, res) => {
   res.send(userList);
 });
 
-router.get("/:id", async (req, res) => {
+router.get(`:id`, async (req, res) => {
   const user = await User.findById(req.params.id).select("-passwordHash");
 
   if (!user) {
@@ -24,7 +25,7 @@ router.get("/:id", async (req, res) => {
   res.status(200).send(user);
 });
 
-router.post("/", async (req, res) => {
+router.post(`/`, async (req, res) => {
   let user = new User({
     name: req.body.name,
     email: req.body.email,
@@ -44,7 +45,7 @@ router.post("/", async (req, res) => {
   res.send(user);
 });
 
-router.put("/:id", async (req, res) => {
+router.put(`/:id`, async (req, res) => {
   const userExist = await User.findById(req.params.id);
   let newPassword;
   if (req.body.password) {
@@ -75,7 +76,7 @@ router.put("/:id", async (req, res) => {
   res.send(user);
 });
 
-router.post("/login", async (req, res) => {
+router.post(`/login`, async (req, res) => {
   const user = await User.findOne({ email: req.body.email });
   const secret = process.env.secret;
   if (!user) {
@@ -98,7 +99,8 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.post("/register", async (req, res) => {
+router.post(`/register`, async (req, res) => {
+  console.log("Hi");
   let user = new User({
     name: req.body.name,
     email: req.body.email,
@@ -112,13 +114,12 @@ router.post("/register", async (req, res) => {
     country: req.body.country,
   });
   user = await user.save();
-
+  console.log(user);
   if (!user) return res.status(400).send("the user cannot be created!");
-
   res.send(user);
 });
 
-router.delete("/:id", (req, res) => {
+router.delete(`/:id`, (req, res) => {
   User.findByIdAndRemove(req.params.id)
     .then((user) => {
       if (user) {
@@ -137,13 +138,22 @@ router.delete("/:id", (req, res) => {
 });
 
 router.get(`/get/count`, async (req, res) => {
-  const userCount = await User.countDocuments((count) => count);
-
-  if (!userCount) {
-    res.status(500).json({ success: false });
-  }
-  res.send({
-    userCount: userCount,
+  User.countDocuments().then((count) => {
+    if (count) {
+      return res
+        .status(200)
+        .json({ success: true, message: `There are ${count} users` });
+    } else {
+      return res
+        .status(404)
+        .json({
+          success: false,
+          message: "Count failed! Please try again...",
+        })
+        .catch((err) => {
+          return res.status(500).json({ success: false, error: err });
+        });
+    }
   });
 });
 

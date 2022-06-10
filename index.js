@@ -11,7 +11,7 @@ app.options("*", cors());
 //middleware
 
 app.use(express.json());
-app.use(morgan("tiny"));
+app.use(morgan("combined"));
 
 //Routes
 
