@@ -29,9 +29,7 @@ router.get(`/:id`, async (req, res) => {
 
 router.post(`/`, async (req, res) => {
   //Validating the category
-  const category = await Category.findById(req.body.category).populate(
-    "category"
-  );
+  const category = await Category.findById(req.body.category);
   if (!category) {
     return res.status(404).send("Invalid Category cannot add this product");
   }
