@@ -5,6 +5,7 @@ var cors = require("cors");
 require("dotenv/config");
 
 const app = express();
+export default app;
 app.use(cors());
 app.options("*", cors());
 
