@@ -1,14 +1,15 @@
 const express = require("express");
 const morgan = require("morgan");
+var bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 var cors = require("cors");
 require("dotenv/config");
 
 const app = express();
-export default app;
 app.use(cors());
 app.options("*", cors());
-
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 //middleware
 
 app.use(express.json());
