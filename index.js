@@ -10,10 +10,12 @@ app.use(cors());
 app.options("*", cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
 //middleware
 
 app.use(express.json());
 app.use(morgan("tiny"));
+app.use("/public/uploads", express.static(__dirname + "public/uploads"));
 
 //Routes
 
