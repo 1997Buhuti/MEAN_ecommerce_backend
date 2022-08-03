@@ -1,5 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
+var bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 var cors = require("cors");
 require("dotenv/config");
@@ -7,11 +8,14 @@ require("dotenv/config");
 const app = express();
 app.use(cors());
 app.options("*", cors());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 //middleware
 
 app.use(express.json());
 app.use(morgan("tiny"));
+app.use("/public/uploads", express.static(__dirname + "/public/uploads"));
 
 //Routes
 
