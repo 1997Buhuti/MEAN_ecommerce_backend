@@ -14,20 +14,19 @@ router.get(`/`, async (req, res) => {
 
 // route to update category
 router.put('/:id', async (req, res) => {
-    console.log(req.params.id);
-    console.log(req.body.data);
     const category = await Category.findByIdAndUpdate(
         req.params.id,
         {
             name: req.body.name,
-            icon: req.body.icon,
+            icon: req.body.icon || category.icon,
             color: req.body.color
         },
         { new: true }
     );
-    if (!category) {
-        res.status(400).send('The category cannot created!');
-    }
+
+    if (!category) return res.status(400).send('the category cannot be created!');
+
+    res.send(category);
 });
 
 //route to get a specific category
