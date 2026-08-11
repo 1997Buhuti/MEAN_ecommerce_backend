@@ -1,8 +1,8 @@
-const mockingoose = require("mockingoose");
-const request = require("supertest");
-const app = require("../index");
+import mockingoose from "mockingoose";
+import request, { Request, Response } from "supertest";
+import app from "../index";
 
-const { Category } = require("../models/category");
+import { Category } from "../models/category";
 
 describe("test mongoose Categories model", () => {
   //testing getting a category by Id

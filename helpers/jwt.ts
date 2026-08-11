@@ -1,9 +1,17 @@
-const expressJwt = require("express-jwt");
+import { RequestHandler, Request } from "express";
+import { expressjwt } from "express-jwt";
 
-function authJwt() {
-  const secret = process.env.secret;
+function isRevoked(req: Request, token: any): boolean {
+  if (!token || !token.isAdmin) {
+    return true;
+  }
+  return false;
+}
+
+function authJwt(): RequestHandler {
+  const secret = process.env.secret!;
   const api = process.env.API_URL;
-  return expressJwt({
+  return expressjwt({
     secret,
     algorithms: ["HS256"],
     isRevoked: isRevoked,
@@ -19,12 +27,4 @@ function authJwt() {
   });
 }
 
-async function isRevoked(req, payload, done) {
-  if (!payload.isAdmin) {
-    done(null, true);
-  }
-
-  done();
-}
-
-module.exports = authJwt;
+export default authJwt;

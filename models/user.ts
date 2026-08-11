@@ -1,6 +1,20 @@
-const mongoose = require("mongoose");
+import mongoose, { Schema, model, models } from "mongoose";
 
-const userSchema = new mongoose.Schema({
+export interface IUser extends mongoose.Document {
+  name: string;
+  email: string;
+  passwordHash: string;
+  phone: string;
+  isAdmin?: boolean;
+  street?: string;
+  apartment?: string;
+  zip?: string;
+  city?: string;
+  country?: string;
+  id: string;
+}
+
+const userSchema = new Schema<IUser>({
   name: {
     type: String,
     required: true,
@@ -51,5 +65,5 @@ userSchema.set("toJSON", {
   virtuals: true,
 });
 
-exports.User = mongoose.model("User", userSchema);
-exports.userSchema = userSchema;
+export const User = models.User || model<IUser>("User", userSchema);
+export { userSchema };
