@@ -17,4 +17,12 @@ const orderItemSchema = new Schema<IOrderItem>({
   },
 });
 
+orderItemSchema.virtual("id").get(function () {
+  return this._id.toHexString();
+});
+
+orderItemSchema.set("toJSON", {
+  virtuals: true,
+});
+
 export const OrderItem = models.OrderItem || model<IOrderItem>("OrderItem", orderItemSchema);
