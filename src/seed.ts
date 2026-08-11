@@ -1,7 +1,8 @@
+import "dotenv/config";
 import dns from "dns";
-import mongoose from "mongoose";
-import dotenv from "dotenv";
 import bcrypt from "bcrypt";
+import mongoose from "mongoose";
+import { connectDB, disconnectDB } from "./config/database";
 import { User } from "./models/user";
 import { Category } from "./models/category";
 import { Product } from "./models/product";
@@ -9,20 +10,6 @@ import { OrderItem } from "./models/order-item";
 import { Order } from "./models/order";
 
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
-
-dotenv.config();
-
-const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.CONNECTION_STRING!, {
-      dbName: "ecommerce-db",
-    });
-    console.log("MongoDB connected for seeding...");
-  } catch (error) {
-    console.error("Database connection failed:", error);
-    process.exit(1);
-  }
-};
 
 const seedCategories = async () => {
   const categories = [
@@ -82,7 +69,7 @@ const seedUsers = async () => {
   return created;
 };
 
-const seedProducts = async (categories) => {
+const seedProducts = async (categories: any[]) => {
   const products = [
     {
       name: "Wireless Headphones",
@@ -196,7 +183,7 @@ const seedProducts = async (categories) => {
   return created;
 };
 
-const seedOrderItems = async (products) => {
+const seedOrderItems = async (products: any[]) => {
   const orderItems = [
     {
       quantity: 2,
@@ -222,7 +209,7 @@ const seedOrderItems = async (products) => {
   return created;
 };
 
-const seedOrders = async (users, orderItems) => {
+const seedOrders = async (users: any[], orderItems: any[]) => {
   const orders = [
     {
       orderItems: [orderItems[0]._id, orderItems[1]._id],
@@ -268,8 +255,7 @@ const seedData = async () => {
   } catch (error) {
     console.error("Seeding failed:", error);
   } finally {
-    await mongoose.disconnect();
-    console.log("MongoDB disconnected");
+    await disconnectDB();
     process.exit(0);
   }
 };

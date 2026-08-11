@@ -1,31 +1,17 @@
-import mockingoose from "mockingoose";
+const mockingoose = require("mockingoose");
 import request, { Request, Response } from "supertest";
 import app from "../index";
 
-import { Category } from "../models/category";
+import { Category } from "../src/models/category";
 
 describe("test mongoose Categories model", () => {
-  //testing getting a category by Id
-  // it.only("should return the doc with findById", () => {
-  //   const _doc = {
-  //     _id: "5f15d5b2cb4a6642bddc0fe7",
-  //     name: "House",
-  //     color: "#E2E1F0",
-  //     icon: "home",
-  //   };
-  //   console.log();
-  //   mockingoose(Category).toReturn(_doc, "findOne");
-
-  //   return Category.findById({ _id: "5f15d5b2cb4a6642bddc0fe7" }).then(
-  //     (doc) => {
-  //       expect(JSON.parse(JSON.stringify(doc))).toMatchObject(_doc);
-  //     }
-  //   );
-  // });
-
-  it.only("should return newly created doc", () => {
+  it("should return newly created doc", () => {
+    mockingoose(Category).toReturn(
+      { name: "Fruits", color: "#E2E1F0", icon: "fruits", _id: "123" },
+      "save"
+    );
     return request(app)
-      .post("/category")
+      .post("/api/v/categories")
       .send({
         name: "Fruits",
         color: "#E2E1F0",
@@ -35,29 +21,14 @@ describe("test mongoose Categories model", () => {
       .then((response) => {
         expect(response.body).toEqual(
           expect.objectContaining({
-            name: "Fruits",
-            color: "#E2E1F0",
-            icon: "fruits",
+            success: true,
+            data: expect.objectContaining({
+              name: "Fruits",
+              color: "#E2E1F0",
+              icon: "fruits",
+            }),
           })
         );
       });
   });
-
-  // //testing updating a category by Id
-  // it("should return the doc with update", () => {
-  //   const _doc = {
-  //     _id: "5f15d5b2cb4a6642bddc0fe7",
-  //     name: "Roka Fan",
-  //     color: "#E2E1F0",
-  //     icon: "home",
-  //   };
-
-  //   mockingoose(Category).toReturn(doc, "update");
-
-  //   return Category.updateOne({ name: "Roka Fan" }) // this won't really change anything
-  //     .where({ _id: "507f191e810c19729de860ea" })
-  //     .then((doc) => {
-  //       expect(JSON.parse(JSON.stringify(doc))).toMatchObject(_doc);
-  //     });
-  // });
 });
