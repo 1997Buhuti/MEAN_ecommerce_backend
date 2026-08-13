@@ -73,7 +73,7 @@ export const getProductCount = async (req: Request, res: Response, next: NextFun
 
 export const getFeaturedProducts = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const count = parseInt(req.params.count) || 0;
+    const count = parseInt(String(req.query.limit ?? "0"), 10) || 0;
     const products = await productService.getFeaturedProducts(count);
     res.status(200).json({ success: true, data: products });
   } catch (err) {
