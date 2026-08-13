@@ -1,5 +1,12 @@
+import dns from "dns";
 import { env } from "./env";
 import mongoose from "mongoose";
+
+// Local workaround: some ISP/router DNS (e.g. fe80::1) refuse SRV lookups that
+// mongodb+srv:// needs, causing querySrv ECONNREFUSED. Skip in production.
+if (process.env.NODE_ENV !== "production") {
+  dns.setServers(["1.1.1.1", "8.8.8.8"]);
+}
 
 export const connectDB = async (): Promise<void> => {
   try {

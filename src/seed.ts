@@ -1,5 +1,4 @@
 import "dotenv/config";
-import dns from "dns";
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 import { connectDB, disconnectDB } from "./config/database";
@@ -8,8 +7,6 @@ import { Category } from "./models/category";
 import { Product } from "./models/product";
 import { OrderItem } from "./models/order-item";
 import { Order } from "./models/order";
-
-dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
 const seedCategories = async () => {
   const categories = [
