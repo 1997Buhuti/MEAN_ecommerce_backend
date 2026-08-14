@@ -75,7 +75,7 @@ export const getOrderCount = async (req: Request, res: Response, next: NextFunct
 
 export const getUserOrders = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const orders = await orderService.getUserOrders(req.params.userid);
+    const orders = await orderService.getUserOrders(req.params.userId);
     res.status(200).json({ success: true, data: orders });
   } catch (err) {
     next(err);
