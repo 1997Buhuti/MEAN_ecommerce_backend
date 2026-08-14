@@ -4,7 +4,7 @@ import { createOrderSchema, updateOrderSchema } from "../../validators/order.val
 import * as orderController from "../../controllers/order.controller";
 
 const router = Router();
-
+// test commit
 router.get("/count", orderController.getOrderCount);
 router.get("/total-sales", orderController.getTotalSales);
 router.get("/", orderController.getAllOrders);
