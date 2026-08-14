@@ -1,0 +1,9 @@
+.git
+.gitignore
+.env
+node_modules
+src
+test
+tsconfig.json
+*.md
+.kilo

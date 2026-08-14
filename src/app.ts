@@ -21,6 +21,14 @@ app.use(express.json());
 app.use(morgan("tiny"));
 app.use("/public/uploads", express.static("public/uploads"));
 
+app.get("/", (_req, res) => {
+  res.status(200).json({ success: true, message: "ok" });
+});
+
+app.get("/health", (_req, res) => {
+  res.status(200).json({ success: true, message: "healthy" });
+});
+
 const api = env.API_URI;
 
 app.use(`${api}/categories`, categoriesRoutes);
