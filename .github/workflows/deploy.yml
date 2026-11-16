@@ -1,0 +1,81 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test-build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run Tests
+        env:
+          CONNECTION_STRING: mongodb://localhost:27017/test_db
+          SECRET: testingsecretkey123456789
+          PORT: 3000
+          API_URI: /api/v
+        run: npm test
+
+      - name: Build TypeScript
+        run: npm run build
+
+      - name: Configure SSH Key
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_PORT: ${{ secrets.SERVER_PORT || 22 }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p $SERVER_PORT -H "$SERVER_HOST" >> ~/.ssh/known_hosts
+
+      - name: Sync Files to Oracle VM
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_PORT: ${{ secrets.SERVER_PORT || 22 }}
+          TARGET_DIR: /var/www/mean_ecommerce_backend
+        run: |
+          # Rsync build output and runtime files to Oracle VM
+          # Excludes source code, tests, local node_modules, and git history
+          rsync -avz --no-perms --no-owner --no-group \
+            -e "ssh -p $SERVER_PORT" \
+            dist package.json package-lock.json ecosystem.config.cjs public \
+            "$SERVER_USER@$SERVER_HOST:$TARGET_DIR/"
+
+      - name: Install Production Dependencies & Reload PM2
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_PORT: ${{ secrets.SERVER_PORT || 22 }}
+          TARGET_DIR: /var/www/mean_ecommerce_backend
+        run: |
+          ssh -p $SERVER_PORT "$SERVER_USER@$SERVER_HOST" bash << 'EOF'
+            set -e
+            cd /var/www/mean_ecommerce_backend
+
+            # Ensure upload directory and logs exist
+            mkdir -p public/uploads logs
+
+            # Install only production dependencies on the 1GB RAM VM
+            npm ci --omit=dev --no-audit
+
+            # Reload PM2 process with zero downtime (or start if first run)
+            pm2 startOrReload ecosystem.config.cjs --update-env
+            pm2 save
+          EOF
